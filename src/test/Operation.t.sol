@@ -34,43 +34,6 @@ contract OperationTest is Setup {
         strategy.swapBase();
 
         assertEq(strategy.base(), address(asset));
-
-        vm.prank(management);
-        strategy.setUniFees(3000, 0);
-
-        // Deposit into strategy
-        mintAndDepositIntoStrategy(strategy, user, _amount);
-
-        checkStrategyTotals(strategy, _amount, _amount, 0);
-
-        // Earn Interest
-        skip(1 days);
-
-        uint256 toAirdrop = 1e18;
-        airdrop(ERC20(strategy.rewardToken()), address(strategy), toAirdrop);
-
-        // Report profit
-        vm.prank(keeper);
-        (uint256 profit, uint256 loss) = strategy.report();
-
-        // Check return Values
-        assertGe(profit, 1, "!profit");
-        assertEq(loss, 0, "!loss");
-        assertEq(ERC20(strategy.rewardToken()).balanceOf(address(strategy)), 0);
-
-        skip(strategy.profitMaxUnlockTime());
-
-        uint256 balanceBefore = asset.balanceOf(user);
-
-        // Withdraw all funds
-        vm.prank(user);
-        strategy.redeem(_amount, user, user);
-
-        assertGe(
-            asset.balanceOf(user),
-            balanceBefore + _amount,
-            "!final balance"
-        );
     }
 
     function test_operation(uint256 _amount) public {

@@ -31,7 +31,7 @@ contract Setup is ExtendedTest, IEvents {
 
     CompoundV3LenderFactory public lenderFactory;
 
-    address public comet = 0xc3d688B66703497DAA19211EEdff47f25384cdc3;
+    address public comet = 0x5D409e56D886231aDAf00c8775665AD0f9897b56;
 
     mapping(string => address) public tokenAddrs;
 
@@ -48,8 +48,8 @@ contract Setup is ExtendedTest, IEvents {
     uint256 public decimals;
     uint256 public MAX_BPS = 10_000;
 
-    uint256 public maxFuzzAmount = 1e11;
-    uint256 public minFuzzAmount = 100_000;
+    uint256 public maxFuzzAmount = 1e25;
+    uint256 public minFuzzAmount = 1e16;
 
     // Default prfot max unlock time is set for 10 days
     uint256 public profitMaxUnlockTime = 10 days;
@@ -64,7 +64,7 @@ contract Setup is ExtendedTest, IEvents {
         );
 
         // Set asset
-        asset = ERC20(tokenAddrs["USDC"]);
+        asset = ERC20(tokenAddrs["USDS"]);
 
         // Set decimals
         decimals = asset.decimals();
@@ -91,7 +91,7 @@ contract Setup is ExtendedTest, IEvents {
                     address(asset),
                     "Tokenized Strategy",
                     comet,
-                    0xdbd020CAeF83eFd542f4De03e3cF0C28A4428bd5
+                    0x02939Ba4Fd42E23d31652b4376842ab62a742f76
                 )
             )
         );
@@ -181,5 +181,6 @@ contract Setup is ExtendedTest, IEvents {
         tokenAddrs["USDT"] = 0xdAC17F958D2ee523a2206206994597C13D831ec7;
         tokenAddrs["DAI"] = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
         tokenAddrs["USDC"] = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
+        tokenAddrs["USDS"] = 0xdC035D45d973E3EC169d2276DDab16f1e407384F;
     }
 }
