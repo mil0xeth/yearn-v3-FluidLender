@@ -40,7 +40,7 @@ contract CompoundV3Lender is BaseStrategy, UniswapV3Swapper {
 
     uint256 internal immutable oracleScaler;
 
-    uint256 public percentOut = 9_5 00;
+    uint256 public percentOut = 9_500;
 
     // Represents if we should claim rewards. Default to true.
     bool public claimRewards = true;
