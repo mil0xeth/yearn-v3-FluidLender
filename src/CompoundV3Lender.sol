@@ -11,10 +11,21 @@ import {IOracle} from "./interfaces/IOracle.sol";
 // Uniswap V3 Swapper
 import {UniswapV3Swapper} from "@periphery/swappers/UniswapV3Swapper.sol";
 
+interface IExchange {
+    function daiToUsds(address usr, uint256 wad) external;
+
+    function usdsToDai(address usr, uint256 wad) external;
+}
+
 contract CompoundV3Lender is BaseStrategy, UniswapV3Swapper {
     using SafeERC20 for ERC20;
 
     address internal constant weth = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+
+    address internal constant dai = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
+
+    address private constant DAI_USDS_EXCHANGER =
+        0x3225737a9Bbb6473CB4a45b7244ACa2BeFdB276A;
 
     // Rewards Stuff
     CometRewards public constant rewardsContract =
@@ -66,6 +77,8 @@ contract CompoundV3Lender is BaseStrategy, UniswapV3Swapper {
         router = 0xE592427A0AEce92De3Edee1F18E0157C05861564;
         // Set the min amount for the swapper to sell
         minAmountToSell = 1e16;
+
+        ERC20(dai).safeApprove(DAI_USDS_EXCHANGER, type(uint256).max);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -149,12 +162,16 @@ contract CompoundV3Lender is BaseStrategy, UniswapV3Swapper {
 
             uint256 balance = ERC20(rewardToken).balanceOf(address(this));
             // The uni swapper will do min checks on _reward.
-            _swapFrom(
+            balance = _swapFrom(
                 rewardToken,
-                address(asset),
+                dai,
                 balance,
                 _getAmountOut(balance)
             );
+
+            if (balance != 0) {
+                IExchange(DAI_USDS_EXCHANGER).daiToUsds(address(this), balance);
+            }
         }
 
         _totalAssets = comet.balanceOf(address(this)) + balanceOfAsset();
@@ -184,7 +201,7 @@ contract CompoundV3Lender is BaseStrategy, UniswapV3Swapper {
         uint24 _baseToAsset
     ) external onlyManagement {
         _setUniFees(rewardToken, base, _rewardToBase);
-        _setUniFees(base, address(asset), _baseToAsset);
+        _setUniFees(base, dai, _baseToAsset);
     }
 
     function setMinAmountToSell(
