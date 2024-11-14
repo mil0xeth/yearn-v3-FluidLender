@@ -162,10 +162,14 @@ contract CompoundV3Lender is BaseStrategy, UniswapV3Swapper {
 
             uint256 balance = ERC20(rewardToken).balanceOf(address(this));
             // The uni swapper will do min checks on _reward.
-            _swapFrom(rewardToken, dai, balance, _getAmountOut(balance));
+            balance = _swapFrom(
+                rewardToken,
+                dai,
+                balance,
+                _getAmountOut(balance)
+            );
 
-            balance = ERC20(dai).balanceOf(address(this));
-            if (balance > 0) {
+            if (balance != 0) {
                 IExchange(DAI_USDS_EXCHANGER).daiToUsds(address(this), balance);
             }
         }
@@ -197,7 +201,7 @@ contract CompoundV3Lender is BaseStrategy, UniswapV3Swapper {
         uint24 _baseToAsset
     ) external onlyManagement {
         _setUniFees(rewardToken, base, _rewardToBase);
-        _setUniFees(base, address(dai), _baseToAsset);
+        _setUniFees(base, dai, _baseToAsset);
     }
 
     function setMinAmountToSell(
