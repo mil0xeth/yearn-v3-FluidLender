@@ -46,4 +46,6 @@ interface IStrategyInterface is IStrategy, IUniswapV3Swapper {
     function auction() external view returns (address);
 
     function setProfitLimitRatio(uint256 _newProfitLimitRatio) external;
+
+    function balanceOfVault() external view returns (uint256);
 }

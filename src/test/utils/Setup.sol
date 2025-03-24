@@ -37,6 +37,7 @@ contract Setup is ExtendedTest, IEvents {
     address public constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
     address public constant FLUID = 0x6f40d4A6237C257fff2dB00FA0510DeEECd303eb;
     address public constant FLUID_WHALE = 0x28849D2b63fA8D361e5fc15cB8aBB13019884d09;
+    address public constant FLUID_PROXY = 0x52Aa899454998Be5b000Ad077a46Bbe360F4e497;
 
     mapping(string => address) public tokenAddrs;
 
@@ -54,7 +55,7 @@ contract Setup is ExtendedTest, IEvents {
     uint256 public decimals;
     uint256 public MAX_BPS = 10_000;
 
-    uint256 public maxFuzzAmount = 1e13;
+    uint256 public maxFuzzAmount = 1e18;
     uint256 public minFuzzAmount = 100_000;
 
     // Default profit max unlock time is set for 10 days
@@ -73,8 +74,8 @@ contract Setup is ExtendedTest, IEvents {
         asset = ERC20(tokenAddrs["USDC"]);
         vault = 0x9Fb7b4477576Fe5B32be4C1843aFB1e55F251B33;
         
-        asset = ERC20(tokenAddrs["USDT"]);
-        vault = 0x5C20B550819128074FD538Edf79791733ccEdd18;
+        //asset = ERC20(tokenAddrs["USDT"]);
+        //vault = 0x5C20B550819128074FD538Edf79791733ccEdd18;
         
         //asset = ERC20(tokenAddrs["WETH"]);
         //vault = 0x90551c1795392094FE6D29B758EcCD233cFAa260;

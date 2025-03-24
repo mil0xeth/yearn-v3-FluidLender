@@ -41,11 +41,14 @@ contract StrategyAprOracle is AprOracleBase {
         
         address _asset = _fluidStrategy.asset();
 
-        //_apr += _getLendingApr(_fluidVault, _fluidStrategy);
+        _apr += _getLendingApr(_fluidVault, _fluidStrategy);
         console.log("Lending APR:", _apr);
         
-        _apr += _getLendingRewardsApr(_fluidVault, _fluidStrategy);
+        _apr += _getLendingRewardsApr(_fluidVault);
         console.log("Lending Rewards APR:", _apr);
+
+        _apr += _getMerkleRewardsApr(_fluidVault);
+        console.log("Merkle Rewards APR:", _apr);
 
         console.log("Strategy APR:", _apr);
     }
@@ -59,8 +62,7 @@ contract StrategyAprOracle is AprOracleBase {
     }
 
     function _getLendingRewardsApr(
-        address _fluidVault,
-        IStrategyInterface _fluidStrategy
+        address _fluidVault
     ) private view returns (uint256 apr) {
         // 2. Add Lending Rewards APR from FluidLendingResolver
         IFToken fToken = IFToken(_fluidVault);
@@ -69,6 +71,12 @@ contract StrategyAprOracle is AprOracleBase {
             // Convert rewardsRate from RATE_PRECISION (1e12) to 1e18
             apr += rewardsRate * (1e16 / RATE_PRECISION);
         }
+    }
+
+    function _getMerkleRewardsApr(
+        address _fluidVault
+    ) private view returns (uint256 apr) {
+        //To do: Implement merkle rewards APR calculation
     }
   
    
