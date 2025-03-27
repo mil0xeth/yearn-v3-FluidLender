@@ -3,7 +3,7 @@ pragma solidity ^0.8.18;
 
 import {IStrategy} from "@tokenized-strategy/interfaces/IStrategy.sol";
 import {IUniswapV3Swapper} from "@periphery/swappers/interfaces/IUniswapV3Swapper.sol";
-import {IFluidVault} from "./Fluid/IFluidVault.sol";
+import {IFluidVault} from "./IFluidVault.sol";
 
 interface IStrategyInterface is IStrategy, IUniswapV3Swapper {
     function vault() external view returns (address);

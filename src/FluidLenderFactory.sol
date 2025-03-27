@@ -13,6 +13,7 @@ contract FluidLenderFactory {
     address public management;
     address public performanceFeeRecipient;
     address public keeper;
+    address public GOV;
 
     address public immutable emergencyAdmin;
 
@@ -23,13 +24,15 @@ contract FluidLenderFactory {
         address _management,
         address _performanceFeeRecipient,
         address _keeper,
-        address _emergencyAdmin
+        address _emergencyAdmin,
+        address _gov
     ) {
         require(_management != address(0), "ZERO ADDRESS");
         management = _management;
         performanceFeeRecipient = _performanceFeeRecipient;
         keeper = _keeper;
         emergencyAdmin = _emergencyAdmin;
+        GOV = _gov;
     }
 
     /**
@@ -52,7 +55,7 @@ contract FluidLenderFactory {
         // We need to use the custom interface with the
         // tokenized strategies available setters.
         IStrategyInterface newStrategy = IStrategyInterface(
-            address(new FluidLender(_asset, _name, _vault, _base))
+            address(new FluidLender(_asset, _name, _vault, _base, GOV))
         );
         newStrategy.setPerformanceFeeRecipient(performanceFeeRecipient);
         newStrategy.setKeeper(keeper);

@@ -3,11 +3,15 @@ pragma solidity ^0.8.18;
 
 import {UniswapV3Swapper} from "@periphery/swappers/UniswapV3Swapper.sol";
 import {Base4626Compounder, ERC20, SafeERC20} from "@periphery/Bases/4626Compounder/Base4626Compounder.sol";
-import {IFluidVault} from "./interfaces/Fluid/IFluidVault.sol";
+import {IFluidVault} from "./interfaces/IFluidVault.sol";
+import {IMerkleDistributor} from "./interfaces/IMerkleDistributor.sol";
 import {IAuction} from "./interfaces/IAuction.sol";
 
 contract FluidLender is Base4626Compounder, UniswapV3Swapper {
     using SafeERC20 for ERC20;
+
+    // Governance address that can set Merkle Distributor
+    address public immutable GOV;
 
     // Array to keep track of reward tokens
     address[] public rewardTokens;
@@ -26,15 +30,21 @@ contract FluidLender is Base4626Compounder, UniswapV3Swapper {
 
     // Address of the auction contract
     address public auction;
+    
+    // Address of the merkle distributor contract
+    address public merkleDistributor;
 
     constructor(
         address _asset,
         string memory _name,
         address _fluidVault,
-        address _base
+        address _base,
+        address _gov
     ) Base4626Compounder(_asset, _name, _fluidVault) {
         require(_base != address(0), "!base");
+        require(_gov != address(0), "!gov");
         base = _base;
+        GOV = _gov;
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -80,6 +90,16 @@ contract FluidLender is Base4626Compounder, UniswapV3Swapper {
     /*//////////////////////////////////////////////////////////////
                     SETTERS
     //////////////////////////////////////////////////////////////*/
+
+    /**
+     * @notice Set the merkle distributor contract address
+     * @param _merkleDistributor Address of the merkle distributor contract
+     */
+    function setMerkleDistributor(address _merkleDistributor) external {
+        require(msg.sender == GOV, "!gov");
+        require(_merkleDistributor != address(0), "!merkleDistributor");
+        merkleDistributor = _merkleDistributor;
+    }
 
     /**
      * @notice Set the auction contract address
@@ -145,7 +165,6 @@ contract FluidLender is Base4626Compounder, UniswapV3Swapper {
                     INTERNAL REWARD HANDLING
     //////////////////////////////////////////////////////////////*/
 
-
     function _claimAndSellRewards() internal override {
         address[] memory _rewardTokens = rewardTokens;
         uint256 _length = _rewardTokens.length;
@@ -161,6 +180,39 @@ contract FluidLender is Base4626Compounder, UniswapV3Swapper {
                 }
             }
         }
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                    MERKLE DISTRIBUTOR FUNCTIONS
+    //////////////////////////////////////////////////////////////*/
+
+    /**
+     * @notice Claim rewards from the merkle distributor
+     * @param cumulativeAmount Total amount claimable including previous claims
+     * @param positionType Type of position
+     * @param positionId ID of the position
+     * @param cycle The cycle to claim for
+     * @param merkleProof The merkle proof for verification
+     * @param metadata Additional metadata for the claim
+     */
+    function claim(
+        uint256 cumulativeAmount,
+        uint8 positionType,
+        bytes32 positionId,
+        uint256 cycle,
+        bytes32[] calldata merkleProof,
+        bytes calldata metadata
+    ) external {
+        require(merkleDistributor != address(0), "no distributor");
+        IMerkleDistributor(merkleDistributor).claim(
+            address(this),
+            cumulativeAmount,
+            positionType,
+            positionId,
+            cycle,
+            merkleProof,
+            metadata
+        );
     }
 
     /*//////////////////////////////////////////////////////////////

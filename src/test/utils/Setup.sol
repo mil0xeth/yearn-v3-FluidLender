@@ -38,7 +38,7 @@ contract Setup is ExtendedTest, IEvents {
     address public constant FLUID = 0x6f40d4A6237C257fff2dB00FA0510DeEECd303eb;
     address public constant FLUID_WHALE = 0x28849D2b63fA8D361e5fc15cB8aBB13019884d09;
     address public constant FLUID_PROXY = 0x52Aa899454998Be5b000Ad077a46Bbe360F4e497;
-
+    address public constant GOV = 0xFEB4acf3df3cDEA7399794D0869ef76A6EfAff52;
     mapping(string => address) public tokenAddrs;
 
     // Addresses for different roles we will use repeatedly.
@@ -67,7 +67,8 @@ contract Setup is ExtendedTest, IEvents {
             management,
             performanceFeeRecipient,
             keeper,
-            emergencyAdmin
+            emergencyAdmin,
+            GOV
         );
 
         // Set asset
