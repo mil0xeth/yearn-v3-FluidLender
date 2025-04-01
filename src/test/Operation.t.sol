@@ -28,7 +28,7 @@ contract OperationTest is Setup {
 
         console.log("Profit: ", profit);
         uint256 apr = 100 * profit * 365 * 86400 * 1e18 / (_amount * strategy.profitMaxUnlockTime());
-        console.log("APR:", apr);
+        //console.log("APR:", apr);
 
         // Check return Values
         assertGe(profit, 0, "!profit");
@@ -93,8 +93,8 @@ contract OperationTest is Setup {
         uint256 fluidReward = 1000e18;
 
         // Set up FLUID token and Uniswap fees
-        vm.prank(management);
-        strategy.addRewardToken(FLUID, 1);
+        //vm.prank(management);
+        //strategy.addRewardToken(FLUID, 1);
         vm.prank(management);
         strategy.setUniFees(FLUID, WETH, 3000);
         vm.prank(management);
@@ -149,8 +149,8 @@ contract OperationTest is Setup {
         _fluidReward = bound(_fluidReward, 100e18, 1000e18);
 
         // Set up FLUID token and Uniswap fees
-        vm.prank(management);
-        strategy.addRewardToken(FLUID, 1);
+        //vm.prank(management);
+        //strategy.addRewardToken(FLUID, 1);
         vm.prank(management);
         strategy.setUniFees(FLUID, WETH, 3000);
         vm.prank(management);

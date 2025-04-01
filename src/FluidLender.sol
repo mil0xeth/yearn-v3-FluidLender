@@ -7,8 +7,14 @@ import {IFluidVault} from "./interfaces/IFluidVault.sol";
 import {IMerkleDistributor} from "./interfaces/IMerkleDistributor.sol";
 import {IAuction} from "./interfaces/IAuction.sol";
 
-contract FluidLender is Base4626Compounder, UniswapV3Swapper {
+contract FluidLender is UniswapV3Swapper, Base4626Compounder {
     using SafeERC20 for ERC20;
+
+    // Address of the auction contract
+    address public auction;
+    
+    // Address of the merkle distributor contract
+    address public merkleDistributor;
 
     // Governance address that can set Merkle Distributor
     address public immutable GOV;
@@ -28,11 +34,7 @@ contract FluidLender is Base4626Compounder, UniswapV3Swapper {
     // Mapping to track swap type for each token
     mapping(address => SwapType) public swapType;
 
-    // Address of the auction contract
-    address public auction;
-    
-    // Address of the merkle distributor contract
-    address public merkleDistributor;
+    address public constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 
     constructor(
         address _asset,
@@ -64,6 +66,8 @@ contract FluidLender is Base4626Compounder, UniswapV3Swapper {
             _token != address(asset) && _token != address(vault),
             "cannot be a reward token"
         );
+        require(swapType[_token] == SwapType.NULL, "exists");
+        require(_swapType != SwapType.NULL, "!swaptype");
         rewardTokens.push(_token);
         swapType[_token] = _swapType;
     }
@@ -158,7 +162,7 @@ contract FluidLender is Base4626Compounder, UniswapV3Swapper {
      * @notice Swap the base token between asset and WETH
      */
     function swapBase() external onlyManagement {
-        base = base == address(asset) ? 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 : address(asset);
+        base = base == address(asset) ? WETH : address(asset);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -228,6 +232,8 @@ contract FluidLender is Base4626Compounder, UniswapV3Swapper {
         address _token
     ) external onlyKeepers returns (uint256) {
         require(swapType[_token] == SwapType.AUCTION, "!auction");
+        uint256 balance = ERC20(_token).balanceOf(address(this));
+        require(balance >= minAmountToSellMapping[_token], "insufficient balance to auction");
         return _kickAuction(_token);
     }
 

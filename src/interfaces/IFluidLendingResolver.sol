@@ -48,6 +48,15 @@ library FluidResolverLib {
     }
 }
 
+interface IFluidLiquidityResolver {
+    /// @notice Get the overall token data for a specific token
+    /// @param token_ The token address
+    /// @return overallTokenData_ The overall token data
+    function getOverallTokenData(
+        address token_
+    ) external view returns (FluidResolverLib.OverallTokenData memory overallTokenData_);
+}
+
 /// @notice Fluid Lending protocol resolver interface (minimal version)
 interface IFluidLendingResolver {
     /// @notice Get details about rewards for a specific fToken
