@@ -49,6 +49,10 @@ contract FluidLender is UniswapV3Swapper, Base4626Compounder {
         GOV = _gov;
     }
 
+    function getRewardTokens() external view returns (address[] memory) {
+        return rewardTokens;
+    }
+
     /*//////////////////////////////////////////////////////////////
                     REWARD TOKEN MANAGEMENT
     //////////////////////////////////////////////////////////////*/
